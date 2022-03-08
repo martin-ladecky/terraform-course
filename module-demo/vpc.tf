@@ -14,7 +14,8 @@ module "vpc" {
 
   tags = {
     Terraform   = "true"
-    Environment = "prod"
+    Environment = "dev"
+    Project     = "loono-api"
   }
 }
 

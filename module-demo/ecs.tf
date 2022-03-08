@@ -4,7 +4,7 @@ data "aws_caller_identity" "current" {
 module "my-ecs" {
   source         = "github.com/in4it/terraform-modules//modules/ecs-cluster"
   vpc_id         = module.vpc.vpc_id
-  cluster_name   = "my-ecs"
+  cluster_name   = "loono-dev-api-cluster"
   instance_type  = "t2.small"
   ssh_key_name   = aws_key_pair.mykeypair.key_name
   vpc_subnets    = join(",", module.vpc.public_subnets)
@@ -18,8 +18,8 @@ module "my-ecs" {
 module "my-service" {
   source              = "github.com/in4it/terraform-modules//modules/ecs-service"
   vpc_id              = module.vpc.vpc_id
-  application_name    = "my-service"
-  application_port    = "80"
+  application_name    = "loono-dev-api"
+  application_port    = "8080"
   application_version = "latest"
   cluster_arn         = module.my-ecs.cluster_arn
   service_role_arn    = module.my-ecs.service_role_arn
@@ -28,17 +28,17 @@ module "my-service" {
   cpu_reservation     = "256"
   memory_reservation  = "128"
   log_group           = "my-log-group"
-  desired_count       = 2
+  desired_count       = 1
   alb_arn             = module.my-alb.lb_arn
 }
 
 module "my-alb" {
   source             = "github.com/in4it/terraform-modules//modules/alb"
   vpc_id             = module.vpc.vpc_id
-  lb_name            = "my-alb"
+  lb_name            = "loono-dev-api-alb"
   vpc_subnets        = module.vpc.public_subnets
   default_target_arn = module.my-service.target_group_arn
-  domain             = "*.ecs.newtech.academy"
+  domain             = "*.api.dev.loono.sk"
   internal           = false
   ecs_sg             = [module.my-ecs.cluster_sg]
 }
@@ -49,5 +49,5 @@ module "my-alb-rule" {
   priority         = 100
   target_group_arn = module.my-service.target_group_arn
   condition_field  = "host-header"
-  condition_values = ["subdomain.ecs.newtech.academy"]
+  condition_values = ["subdomain.api.dev.loono.sk"]
 }

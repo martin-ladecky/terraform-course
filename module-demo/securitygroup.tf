@@ -1,6 +1,6 @@
 resource "aws_security_group" "allow-ssh" {
   vpc_id      = module.vpc.vpc_id
-  name        = "allow-ssh"
+  name        = "allow-ssh-loono"
   description = "security group that allows ssh and all egress traffic"
 
   egress {
@@ -18,7 +18,7 @@ resource "aws_security_group" "allow-ssh" {
   }
 
   tags = {
-    Name = "allow-ssh"
+    Name = "allow-ssh-loono"
   }
 }
 
